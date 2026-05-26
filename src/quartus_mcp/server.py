@@ -69,7 +69,7 @@ TOOLS: dict[str, dict[str, Any]] = {
         },
     },
     "run_vwf_simulation": {
-        "description": "Run the Quartus compile_and_simulate flow and locate generated CVWF files.",
+        "description": "Run quartus_sim with a VWF input source, CVWF output format, and waveform overwrite disabled.",
         "handler": run_vwf_simulation,
         "schema": {
             "type": "object",

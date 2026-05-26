@@ -153,6 +153,16 @@ def _find_project_file(project_dir: Path, project_name: str) -> Path:
     return matches[0]
 
 
+def _find_vwf_file(project_dir: Path, project_name: str) -> Path:
+    direct = project_dir / f"{project_name}.vwf"
+    if direct.exists():
+        return direct
+    matches = sorted(project_dir.glob("*.vwf"))
+    if not matches:
+        raise FileNotFoundError(f"No .vwf file found in {project_dir}")
+    return matches[0]
+
+
 def _latest_files(project_dir: Path, patterns: list[str]) -> list[str]:
     found: list[Path] = []
     for pattern in patterns:
@@ -222,9 +232,18 @@ def compile_project(project_dir: str, project_name: str = DEFAULT_PROJECT_NAME, 
 def run_vwf_simulation(project_dir: str, project_name: str = DEFAULT_PROJECT_NAME, quartus_bin: str | None = None, timeout_sec: int = 600) -> dict[str, Any]:
     root = Path(project_dir)
     qpf = _find_project_file(root, project_name)
+    vwf = _find_vwf_file(root, qpf.stem)
     before = set(_latest_files(root, ["*.cvwf"]))
     resolved_bin = _resolve_quartus_bin(quartus_bin)
-    command = [str(_exe(resolved_bin, "quartus_sh")), "--flow", "compile_and_simulate", qpf.stem]
+    command = [
+        str(_exe(resolved_bin, "quartus_sim")),
+        qpf.stem,
+        "-c",
+        qpf.stem,
+        f"--vector_source={vwf.name}",
+        "--simulation_results_format=CVWF",
+        "--overwrite_waveform=off",
+    ]
     result = _run(command, cwd=root, timeout_sec=timeout_sec)
     after = _latest_files(root, ["*.cvwf"])
     new_cvwf = [path for path in after if path not in before]
@@ -237,6 +256,7 @@ def run_vwf_simulation(project_dir: str, project_name: str = DEFAULT_PROJECT_NAM
         "ok": ok,
         "project_dir": str(root),
         "project_name": qpf.stem,
+        "vector_source": str(vwf),
         "command": result.to_dict(),
         "cvwf_files": after,
         "new_cvwf_files": new_cvwf,

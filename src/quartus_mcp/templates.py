@@ -43,6 +43,8 @@ def render_qsf(project_name: str, top_entity: str) -> str:
         f"set_global_assignment -name VHDL_FILE {top_entity}.vhd",
         f"set_global_assignment -name VECTOR_WAVEFORM_FILE {top_entity}.vwf",
         f'set_global_assignment -name VECTOR_INPUT_SOURCE "{top_entity}.vwf"',
+        "set_global_assignment -name SIM_OVERWRITE_WAVEFORM_INPUTS OFF",
+        "set_global_assignment -name VECTOR_OUTPUT_FORMAT CVWF",
         "",
         f"set_location_assignment PIN_{CLK_PIN} -to clk",
         f"set_location_assignment PIN_{ENABLE_PIN} -to enable",
@@ -97,18 +99,6 @@ def _signal(name: str, direction: str, signal_type: str = "SINGLE_BIT", width: i
 \tLSB_INDEX = {lsb};
 \tDIRECTION = {direction};
 \tPARENT = "{parent}";
-}}
-"""
-
-
-def _constant_transition(name: str, level: str, duration_ns: int) -> str:
-    return f"""TRANSITION_LIST("{name}")
-{{
-\tNODE
-\t{{
-\t\tREPEAT = 1;
-\t\tLEVEL {level} FOR {float(duration_ns):.1f};
-\t}}
 }}
 """
 
@@ -177,8 +167,6 @@ def render_vwf(top_entity: str, simulation_time_ns: int = 50000, grid_period_ns:
 }}
 """,
     ]
-    transition_blocks.extend(_constant_transition(f"led[{index}]", "X", simulation_time_ns) for index in range(15, -1, -1))
-
     display_blocks = [
         _display_line("clk", 0),
         _display_line("rst", 1),
