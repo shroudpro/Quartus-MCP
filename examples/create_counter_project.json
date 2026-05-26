@@ -1,0 +1,6 @@
+{
+  "project_name": "counter_demo",
+  "overwrite": false,
+  "simulation_time_ns": 50000,
+  "grid_period_ns": 100
+}

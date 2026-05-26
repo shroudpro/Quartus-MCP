@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "quartus": {
+      "command": "python",
+      "args": ["-m", "quartus_mcp.server"],
+      "env": {
+        "QUARTUS_BIN": "C:\\altera\\91\\quartus\\bin64"
+      }
+    }
+  }
+}

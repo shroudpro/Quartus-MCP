@@ -1,0 +1,23 @@
+[project]
+name = "quartus-mcp"
+version = "0.1.0"
+description = "Local MCP server for Quartus II 9.1 project creation, compile, VWF simulation, and report summaries."
+requires-python = ">=3.10"
+dependencies = []
+readme = "README.md"
+license = "MIT"
+keywords = ["quartus", "mcp", "fpga", "codex", "claude-code"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Operating System :: Microsoft :: Windows",
+    "Topic :: Scientific/Engineering :: Electronic Design Automation (EDA)",
+]
+
+[project.scripts]
+quartus-mcp-server = "quartus_mcp.server:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
